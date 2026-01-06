@@ -1,9 +1,13 @@
 import { useState } from 'react';
-import { MapPin, ShoppingCart, Mic, Utensils, Pizza, Leaf, IceCream, ChefHat, Soup, Croissant, Coffee, UtensilsCrossed } from 'lucide-react';
+import { MapPin, ShoppingCart, Mic, Utensils, Pizza, Leaf, IceCream, ChefHat, Soup, Croissant, Coffee, UtensilsCrossed, UserCircle } from 'lucide-react';
 import { VoiceAssistant } from './components/VoiceAssistant';
 import { FoodCard } from './components/FoodCard';
 import { LocationSelector } from './components/LocationSelector';
 import { Cart, CartItem } from './components/Cart';
+import { Login } from './components/Login';
+import { Signup } from './components/Signup';
+import { Profile } from './components/Profile';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { Toaster } from './components/ui/sonner';
 import { toast } from 'sonner';
 
@@ -49,7 +53,7 @@ const foodItems: FoodItem[] = [
     price: 8.99,
     rating: 4.7,
     deliveryTime: '15-20 min',
-    image: 'https://images.unsplash.com/photo-1666001120694-3ebe8fd207be?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwYW5lZXIlMjB0aWtrYSUyMGluZGlhbnxlbnwxfHx8fDE3Njc2NTczNTR8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwYW5lZXIlMjB0aWtrYSUyMGdyaWxsZWR8ZW58MXx8fHwxNzY3NzE3MTg1fDA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'appetizers',
     badge: 'Popular',
   },
@@ -60,7 +64,7 @@ const foodItems: FoodItem[] = [
     price: 9.99,
     rating: 4.8,
     deliveryTime: '15-20 min',
-    image: 'https://images.unsplash.com/photo-1666001120694-3ebe8fd207be?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwYW5lZXIlMjB0aWtrYSUyMGluZGlhbnxlbnwxfHx8fDE3Njc2NTczNTR8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1690519315565-c31ce99f8d58?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGlja2VuJTIwNjUlMjBmcmllZHxlbnwxfHx8fDE3Njc3MTcxODR8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'appetizers',
     badge: 'Bestseller',
   },
@@ -81,7 +85,7 @@ const foodItems: FoodItem[] = [
     price: 5.99,
     rating: 4.5,
     deliveryTime: '10-15 min',
-    image: 'https://images.unsplash.com/photo-1697155836252-d7f969108b5a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYW1vc2ElMjBpbmRpYW4lMjBzbmFja3xlbnwxfHx8fDE3Njc2MTIzMDh8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1666190091191-0cd0c5c8c5b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwYWtvcmElMjBmcml0dGVyc3xlbnwxfHx8fDE3Njc2OTY1NTV8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'appetizers',
   },
   {
@@ -91,7 +95,7 @@ const foodItems: FoodItem[] = [
     price: 11.99,
     rating: 4.7,
     deliveryTime: '15-20 min',
-    image: 'https://images.unsplash.com/photo-1697155836252-d7f969108b5a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYW1vc2ElMjBpbmRpYW4lMjBzbmFja3xlbnwxfHx8fDE3Njc2MTIzMDh8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1620894580123-466ad3a0ca06?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmaXNoJTIwY3VycnklMjBrZXJhbGF8ZW58MXx8fHwxNzY3NzE3MTg0fDA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'appetizers',
   },
 
@@ -103,7 +107,7 @@ const foodItems: FoodItem[] = [
     price: 5.99,
     rating: 4.5,
     deliveryTime: '10-15 min',
-    image: 'https://images.unsplash.com/photo-1626500155537-93690c24099e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkYWwlMjB0YWRrYSUyMGluZGlhbnxlbnwxfHx8fDE3Njc3MTMwMTd8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1730312382513-62e9454f4797?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyYXNhbSUyMHNvdXAlMjB0b21hdG98ZW58MXx8fHwxNzY3NzE3MTkxfDA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'soups',
   },
   {
@@ -113,7 +117,7 @@ const foodItems: FoodItem[] = [
     price: 4.99,
     rating: 4.4,
     deliveryTime: '5-10 min',
-    image: 'https://images.unsplash.com/photo-1626500155537-93690c24099e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkYWwlMjB0YWRrYSUyMGluZGlhbnxlbnwxfHx8fDE3Njc3MTMwMTd8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1677653805080-59c57727c84e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYWxhZCUyMGZyZXNoJTIwdmVnZXRhYmxlc3xlbnwxfHx8fDE3Njc2NjIzMTN8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'soups',
     badge: 'Healthy',
   },
@@ -124,7 +128,7 @@ const foodItems: FoodItem[] = [
     price: 4.99,
     rating: 4.6,
     deliveryTime: '10-15 min',
-    image: 'https://images.unsplash.com/photo-1626500155537-93690c24099e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkYWwlMjB0YWRrYSUyMGluZGlhbnxlbnwxfHx8fDE3Njc3MTMwMTd8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1730312382513-62e9454f4797?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyYXNhbSUyMHNvdXAlMjB0b21hdG98ZW58MXx8fHwxNzY3NzE3MTkxfDA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'soups',
   },
 
@@ -136,7 +140,7 @@ const foodItems: FoodItem[] = [
     price: 2.99,
     rating: 4.7,
     deliveryTime: '10-15 min',
-    image: 'https://images.unsplash.com/photo-1697155406014-04dc649b0953?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxuYWFuJTIwYnJlYWQlMjBpbmRpYW58ZW58MXx8fHwxNzY3Njc1NDEzfDA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1763951718950-c536b1295213?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxuYWFuJTIwYnJlYWQlMjB0YW5kb29yfGVufDF8fHx8MTc2NzcxNzE5MHww&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'breads',
   },
   {
@@ -146,7 +150,7 @@ const foodItems: FoodItem[] = [
     price: 1.99,
     rating: 4.6,
     deliveryTime: '10-15 min',
-    image: 'https://images.unsplash.com/photo-1697155406014-04dc649b0953?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxuYWFuJTIwYnJlYWQlMjBpbmRpYW58ZW58MXx8fHwxNzY3Njc1NDEzfDA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1763951719324-d1ff7eff0f7b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyb3RpJTIwY2hhcGF0aSUyMGZsYXRicmVhZHxlbnwxfHx8fDE3Njc3MTcxOTB8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'breads',
   },
   {
@@ -156,7 +160,7 @@ const foodItems: FoodItem[] = [
     price: 3.99,
     rating: 4.8,
     deliveryTime: '15-20 min',
-    image: 'https://images.unsplash.com/photo-1697155406014-04dc649b0953?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxuYWFuJTIwYnJlYWQlMjBpbmRpYW58ZW58MXx8fHwxNzY3Njc1NDEzfDA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1634976997107-8cfa3b4ec10f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwYXJvdHRhJTIwa2VyYWxhJTIwYnJlYWR8ZW58MXx8fHwxNzY3NzE3MTkxfDA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'breads',
     badge: 'Popular',
   },
@@ -167,7 +171,7 @@ const foodItems: FoodItem[] = [
     price: 7.99,
     rating: 4.9,
     deliveryTime: '15-20 min',
-    image: 'https://images.unsplash.com/photo-1743615467204-8fdaa85ff2db?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYXNhbGElMjBkb3NhJTIwc291dGglMjBpbmRpYW58ZW58MXx8fHwxNjc2MzczMjUwfDA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1708146464361-5c5ce4f9abb6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYXNhbGElMjBkb3NhJTIwaW5kaWFufGVufDF8fHx8MTc2NzYxNDEzOHww&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'south-indian',
     badge: 'Bestseller',
   },
@@ -180,7 +184,7 @@ const foodItems: FoodItem[] = [
     price: 11.99,
     rating: 4.6,
     deliveryTime: '25-30 min',
-    image: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGlja2VuJTIwYmlyeWFuaSUyMGluZGlhbnxlbnwxfHx8fDE3Njc3MTMwMDF8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1666190092689-e3968aa0c32c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiaXJ5YW5pJTIwcmljZSUyMGluZGlhbnxlbnwxfHx8fDE3Njc3MTcxODB8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'biryani',
   },
   {
@@ -190,7 +194,7 @@ const foodItems: FoodItem[] = [
     price: 13.99,
     rating: 4.9,
     deliveryTime: '30-35 min',
-    image: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGlja2VuJTIwYmlyeWFuaSUyMGluZGlhbnxlbnwxfHx8fDE3Njc3MTMwMDF8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGlja2VuJTIwYmlyeWFuaXxlbnwxfHx8fDE3Njc2ODQ3Njd8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'biryani',
     badge: 'Bestseller',
   },
@@ -201,7 +205,7 @@ const foodItems: FoodItem[] = [
     price: 10.99,
     rating: 4.5,
     deliveryTime: '20-25 min',
-    image: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGlja2VuJTIwYmlyeWFuaSUyMGluZGlhbnxlbnwxfHx8fDE3Njc3MTMwMDF8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1666190092689-e3968aa0c32c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiaXJ5YW5pJTIwcmljZSUyMGluZGlhbnxlbnwxfHx8fDE3Njc3MTcxODB8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'biryani',
   },
   {
@@ -211,7 +215,7 @@ const foodItems: FoodItem[] = [
     price: 6.99,
     rating: 4.5,
     deliveryTime: '15-20 min',
-    image: 'https://images.unsplash.com/photo-1633383718081-22ac93e3db65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjdXJkJTIwcmljZSUyMHNvdXRoJTIwaW5kaWFufGVufDF8fHx8MTc2NzcxMzAxOXww&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1552033809-48a1213d359d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsZW1vbiUyMHJpY2UlMjBzb3V0aHxlbnwxfHx8fDE3Njc3MTcxODF8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'rice',
   },
   {
@@ -221,7 +225,7 @@ const foodItems: FoodItem[] = [
     price: 6.99,
     rating: 4.4,
     deliveryTime: '15-20 min',
-    image: 'https://images.unsplash.com/photo-1633383718081-22ac93e3db65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjdXJkJTIwcmljZSUyMHNvdXRoJTIwaW5kaWFufGVufDF8fHx8MTc2NzcxMzAxOXww&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1552033809-48a1213d359d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsZW1vbiUyMHJpY2UlMjBzb3V0aHxlbnwxfHx8fDE3Njc3MTcxODF8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'rice',
   },
 
@@ -244,7 +248,7 @@ const foodItems: FoodItem[] = [
     price: 8.99,
     rating: 4.6,
     deliveryTime: '20-25 min',
-    image: 'https://images.unsplash.com/photo-1701579231378-3726490a407b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwYW5lZXIlMjBidXR0ZXIlMjBtYXNhbGF8ZW58MXx8fHwxNzY3NzEzMDE3fDA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1587033649773-5c231faa21e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGFuYSUyMG1hc2FsYSUyMGNoaWNrcGVhc3xlbnwxfHx8fDE3Njc3MTcxODJ8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'veg-curries',
   },
   {
@@ -254,7 +258,7 @@ const foodItems: FoodItem[] = [
     price: 8.99,
     rating: 4.5,
     deliveryTime: '20-25 min',
-    image: 'https://images.unsplash.com/photo-1701579231378-3726490a407b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwYW5lZXIlMjBidXR0ZXIlMjBtYXNhbGF8ZW58MXx8fHwxNzY3NzEzMDE3fDA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1640542509430-f529fdfce835?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhbG9vJTIwZ29iaSUyMGN1cnJ5fGVufDF8fHx8MTc2NzcxNzE4M3ww&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'veg-curries',
   },
   {
@@ -264,7 +268,7 @@ const foodItems: FoodItem[] = [
     price: 7.99,
     rating: 4.7,
     deliveryTime: '15-20 min',
-    image: 'https://images.unsplash.com/photo-1626500155537-93690c24099e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkYWwlMjB0YWRrYSUyMGluZGlhbnxlbnwxfHx8fDE3Njc3MTMwMTd8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1587033649773-5c231faa21e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGFuYSUyMG1hc2FsYSUyMGNoaWNrcGVhc3xlbnwxfHx8fDE3Njc3MTcxODJ8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'veg-curries',
   },
 
@@ -276,7 +280,7 @@ const foodItems: FoodItem[] = [
     price: 13.99,
     rating: 4.9,
     deliveryTime: '25-30 min',
-    image: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxidXR0ZXIlMjBjaGlja2VuJTIwaW5kaWFuJTIwY3Vycnl8ZW58MXx8fHwxNzY3NzEzMDAyfDA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxidXR0ZXIlMjBjaGlja2VuJTIwY3Vycnl8ZW58MXx8fHwxNzY3NjUzODAyfDA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'non-veg',
     badge: 'Bestseller',
   },
@@ -287,7 +291,7 @@ const foodItems: FoodItem[] = [
     price: 15.99,
     rating: 4.7,
     deliveryTime: '30-35 min',
-    image: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxidXR0ZXIlMjBjaGlja2VuJTIwaW5kaWFuJTIwY3Vycnl8ZW58MXx8fHwxNzY3NzEzMDAyfDA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxidXR0ZXIlMjBjaGlja2VuJTIwY3Vycnl8ZW58MXx8fHwxNzY3NjUzODAyfDA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'non-veg',
   },
   {
@@ -297,7 +301,7 @@ const foodItems: FoodItem[] = [
     price: 14.99,
     rating: 4.6,
     deliveryTime: '25-30 min',
-    image: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxidXR0ZXIlMjBjaGlja2VuJTIwaW5kaWFuJTIwY3Vycnl8ZW58MXx8fHwxNzY3NzEzMDAyfDA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxidXR0ZXIlMjBjaGlja2VuJTIwY3Vycnl8ZW58MXx8fHwxNzY3NjUzODAyfDA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'non-veg',
   },
   {
@@ -307,7 +311,7 @@ const foodItems: FoodItem[] = [
     price: 13.99,
     rating: 4.7,
     deliveryTime: '25-30 min',
-    image: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxidXR0ZXIlMjBjaGlja2VuJTIwaW5kaWFuJTIwY3Vycnl8ZW58MXx8fHwxNzY3NzEzMDAyfDA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1620894580123-466ad3a0ca06?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmaXNoJTIwY3VycnklMjBrZXJhbGF8ZW58MXx8fHwxNzY3NzE3MTg0fDA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'non-veg',
   },
   {
@@ -317,7 +321,7 @@ const foodItems: FoodItem[] = [
     price: 13.99,
     rating: 4.8,
     deliveryTime: '25-30 min',
-    image: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxidXR0ZXIlMjBjaGlja2VuJTIwaW5kaWFuJTIwY3Vycnl8ZW58MXx8fHwxNzY3NzEzMDAyfDA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxidXR0ZXIlMjBjaGlja2VuJTIwY3Vycnl8ZW58MXx8fHwxNzY3NjUzODAyfDA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'non-veg',
   },
 
@@ -329,7 +333,7 @@ const foodItems: FoodItem[] = [
     price: 5.99,
     rating: 4.7,
     deliveryTime: '15-20 min',
-    image: 'https://images.unsplash.com/photo-1668236499396-a62d2d1cb0cf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpZGxpJTIwc2FtYmFyJTIwc291dGglMjBpbmRpYW58ZW58MXx8fHwxNzY3NjI3NjkwfDA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1644289450169-bc58aa16bacb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpZGxpJTIwc2FtYmFyJTIwYnJlYWtmYXN0fGVufDF8fHx8MTc2NzcxNzE3OHww&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'south-indian',
     badge: 'Healthy',
   },
@@ -340,7 +344,7 @@ const foodItems: FoodItem[] = [
     price: 5.99,
     rating: 4.6,
     deliveryTime: '15-20 min',
-    image: 'https://images.unsplash.com/photo-1695279087980-6f3d3102bf15?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx2YWRhJTIwbWVkdSUyMHNvdXRoJTIwaW5kaWFufGVufDF8fHx8MTc2NzYyNzY5MHww&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1666190091191-0cd0c5c8c5b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwYWtvcmElMjBmcml0dGVyc3xlbnwxfHx8fDE3Njc2OTY1NTV8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'south-indian',
   },
   {
@@ -350,7 +354,7 @@ const foodItems: FoodItem[] = [
     price: 6.99,
     rating: 4.5,
     deliveryTime: '15-20 min',
-    image: 'https://images.unsplash.com/photo-1586172406840-31529c6b2d4c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1dHRhcGFtJTIwc291dGglMjBpbmRpYW58ZW58MXx8fHwxNzY3NjIyMTU1fDA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1630441508966-431c08536d1b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1dHRhcGFtJTIwcGFuY2FrZXxlbnwxfHx8fDE3Njc3MTcxNzl8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'south-indian',
   },
   {
@@ -360,7 +364,7 @@ const foodItems: FoodItem[] = [
     price: 6.99,
     rating: 4.6,
     deliveryTime: '15-20 min',
-    image: 'https://images.unsplash.com/photo-1633383718081-22ac93e3db65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjdXJkJTIwcmljZSUyMHNvdXRoJTIwaW5kaWFufGVufDF8fHx8MTc2NzcxMzAxOXww&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1707270686195-7415251cc9c0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwb25nYWwlMjByaWNlJTIwZGlzaHxlbnwxfHx8fDE3Njc3MTcxNzl8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'south-indian',
   },
   {
@@ -370,7 +374,7 @@ const foodItems: FoodItem[] = [
     price: 8.99,
     rating: 4.8,
     deliveryTime: '20-25 min',
-    image: 'https://images.unsplash.com/photo-1743615467204-8fdaa85ff2db?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYXNhbGElMjBkb3NhJTIwc291dGglMjBpbmRpYW58ZW58MXx8fHwxNjc2MzczMjUwfDA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1708146464361-5c5ce4f9abb6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYXNhbGElMjBkb3NhJTIwaW5kaWFufGVufDF8fHx8MTc2NzYxNDEzOHww&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'south-indian',
     badge: 'Popular',
   },
@@ -381,7 +385,7 @@ const foodItems: FoodItem[] = [
     price: 7.99,
     rating: 4.6,
     deliveryTime: '15-20 min',
-    image: 'https://images.unsplash.com/photo-1743615467204-8fdaa85ff2db?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYXNhbGElMjBkb3NhJTIwc291dGglMjBpbmRpYW58ZW58MXx8fHwxNjc2MzczMjUwfDA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1695666403934-5929e4690900?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwbGFpbiUyMGRvc2ElMjBzb3V0aCUyMGluZGlhbnxlbnwxfHx8fDE3Njc3MTcxNzh8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'south-indian',
   },
   {
@@ -391,7 +395,7 @@ const foodItems: FoodItem[] = [
     price: 8.99,
     rating: 4.7,
     deliveryTime: '20-25 min',
-    image: 'https://images.unsplash.com/photo-1668236499396-a62d2d1cb0cf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpZGxpJTIwc2FtYmFyJTIwc291dGglMjBpbmRpYW58ZW58MXx8fHwxNzY3NjI3NjkwfDA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1644289450169-bc58aa16bacb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpZGxpJTIwc2FtYmFyJTIwYnJlYWtmYXN0fGVufDF8fHx8MTc2NzcxNzE3OHww&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'south-indian',
   },
   {
@@ -401,7 +405,7 @@ const foodItems: FoodItem[] = [
     price: 5.99,
     rating: 4.4,
     deliveryTime: '10-15 min',
-    image: 'https://images.unsplash.com/photo-1633383718081-22ac93e3db65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjdXJkJTIwcmljZSUyMHNvdXRoJTIwaW5kaWFufGVufDF8fHx8MTc2NzcxMzAxOXww&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1644289450169-bc58aa16bacb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1cG1hJTIwYnJlYWtmYXN0JTIwaW5kaWFufGVufDF8fHx8MTc2NzcxNzE4MHww&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'south-indian',
   },
 
@@ -413,7 +417,7 @@ const foodItems: FoodItem[] = [
     price: 7.99,
     rating: 4.8,
     deliveryTime: '15-20 min',
-    image: 'https://images.unsplash.com/photo-1619193100179-af4cc742ed3e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwYXYlMjBiaGFqaSUyMGluZGlhbiUyMHN0cmVldCUyMGZvb2R8ZW58MXx8fHwxNzY3NzEzMDAzfDA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1591200571589-195fc9ce8742?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwYXYlMjBiaGFqaSUyMG11bWJhaXxlbnwxfHx8fDE3Njc3MTcxODZ8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'street-food',
     badge: 'Popular',
   },
@@ -424,7 +428,7 @@ const foodItems: FoodItem[] = [
     price: 4.99,
     rating: 4.7,
     deliveryTime: '10-15 min',
-    image: 'https://images.unsplash.com/photo-1554978991-33ef7f31d658?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx2YWRhJTIwcGF2JTIwbXVtYmFpfGVufDF8fHx8MTc2NzcxMzAxOHww&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1554978991-33ef7f31d658?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx2YWRhJTIwcGF2JTIwc3RyZWV0fGVufDF8fHx8MTc2NzcxNzE4Nnww&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'street-food',
   },
   {
@@ -434,7 +438,7 @@ const foodItems: FoodItem[] = [
     price: 5.99,
     rating: 4.9,
     deliveryTime: '10-15 min',
-    image: 'https://images.unsplash.com/photo-1697155836252-d7f969108b5a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYW1vc2ElMjBpbmRpYW4lMjBzbmFja3xlbnwxfHx8fDE3Njc2MTIzMDh8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1649140041688-0f75446e707e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwYW5pJTIwcHVyaSUyMGdvbGdhcHBhfGVufDF8fHx8MTc2NzcxNzE4N3ww&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'street-food',
     badge: 'Bestseller',
   },
@@ -445,7 +449,7 @@ const foodItems: FoodItem[] = [
     price: 5.99,
     rating: 4.6,
     deliveryTime: '10-15 min',
-    image: 'https://images.unsplash.com/photo-1697155836252-d7f969108b5a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYW1vc2ElMjBpbmRpYW4lMjBzbmFja3xlbnwxfHx8fDE3Njc2MTIzMDh8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1649140041688-0f75446e707e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwYW5pJTIwcHVyaSUyMGdvbGdhcHBhfGVufDF8fHx8MTc2NzcxNzE4N3ww&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'street-food',
   },
 
@@ -457,7 +461,7 @@ const foodItems: FoodItem[] = [
     price: 5.99,
     rating: 4.5,
     deliveryTime: '10-15 min',
-    image: 'https://images.unsplash.com/photo-1633383718081-22ac93e3db65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjdXJkJTIwcmljZSUyMHNvdXRoJTIwaW5kaWFufGVufDF8fHx8MTc2NzcxMzAxOXww&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1633383718081-22ac93e3db65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjdXJkJTIwcmljZSUyMHlvZ3VydHxlbnwxfHx8fDE3Njc3MTcxODF8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'rice',
     badge: 'Healthy',
   },
@@ -468,7 +472,7 @@ const foodItems: FoodItem[] = [
     price: 6.99,
     rating: 4.6,
     deliveryTime: '15-20 min',
-    image: 'https://images.unsplash.com/photo-1633383718081-22ac93e3db65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjdXJkJTIwcmljZSUyMHNvdXRoJTIwaW5kaWFufGVufDF8fHx8MTc2NzcxMzAxOXww&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1715941873444-e8ec67753c98?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2NvbnV0JTIwcmljZSUyMGluZGlhbnxlbnwxfHx8fDE3Njc3MTcxODJ8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'rice',
   },
   {
@@ -478,7 +482,7 @@ const foodItems: FoodItem[] = [
     price: 6.99,
     rating: 4.7,
     deliveryTime: '15-20 min',
-    image: 'https://images.unsplash.com/photo-1633383718081-22ac93e3db65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjdXJkJTIwcmljZSUyMHNvdXRoJTIwaW5kaWFufGVufDF8fHx8MTc2NzcxMzAxOXww&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1552033809-48a1213d359d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsZW1vbiUyMHJpY2UlMjBzb3V0aHxlbnwxfHx8fDE3Njc3MTcxODF8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'rice',
   },
   {
@@ -488,7 +492,7 @@ const foodItems: FoodItem[] = [
     price: 7.99,
     rating: 4.7,
     deliveryTime: '20-25 min',
-    image: 'https://images.unsplash.com/photo-1633383718081-22ac93e3db65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjdXJkJTIwcmljZSUyMHNvdXRoJTIwaW5kaWFufGVufDF8fHx8MTc2NzcxMzAxOXww&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1715941873444-e8ec67753c98?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2NvbnV0JTIwcmljZSUyMGluZGlhbnxlbnwxfHx8fDE3Njc3MTcxODJ8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'rice',
   },
 
@@ -500,7 +504,7 @@ const foodItems: FoodItem[] = [
     price: 4.99,
     rating: 4.8,
     deliveryTime: '10-15 min',
-    image: 'https://images.unsplash.com/photo-1666190092159-3171cf0fbb12?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxndWxhYiUyMGphbXVuJTIwaW5kaWFuJTIwZGVzc2VydHxlbnwxfHx8fDE3Njc3MTMwMDN8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1666190092159-3171cf0fbb12?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxndWxhYiUyMGphbXVuJTIwZGVzc2VydHxlbnwxfHx8fDE3Njc2NzU0MTR8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'desserts',
     badge: 'Popular',
   },
@@ -511,7 +515,7 @@ const foodItems: FoodItem[] = [
     price: 5.99,
     rating: 4.7,
     deliveryTime: '10-15 min',
-    image: 'https://images.unsplash.com/photo-1666190092159-3171cf0fbb12?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxndWxhYiUyMGphbXVuJTIwaW5kaWFuJTIwZGVzc2VydHxlbnwxfHx8fDE3Njc3MTMwMDN8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1516709315038-c53bf87e8f48?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyYXNndWxsYSUyMHN3ZWV0JTIwYmVuZ2FsaXxlbnwxfHx8fDE3Njc3MTcxODd8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'desserts',
   },
   {
@@ -521,7 +525,7 @@ const foodItems: FoodItem[] = [
     price: 4.99,
     rating: 4.6,
     deliveryTime: '10-15 min',
-    image: 'https://images.unsplash.com/photo-1666190092159-3171cf0fbb12?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxndWxhYiUyMGphbXVuJTIwaW5kaWFuJTIwZGVzc2VydHxlbnwxfHx8fDE3Njc3MTMwMDN8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1708782340357-b7b38d653979?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxraGVlciUyMHBheWFzYW0lMjBwdWRkaW5nfGVufDF8fHx8MTc2NzcxNzE4OHww&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'desserts',
   },
   {
@@ -531,7 +535,7 @@ const foodItems: FoodItem[] = [
     price: 4.99,
     rating: 4.7,
     deliveryTime: '5-10 min',
-    image: 'https://images.unsplash.com/photo-1666190092159-3171cf0fbb12?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxndWxhYiUyMGphbXVuJTIwaW5kaWFuJTIwZGVzc2VydHxlbnwxfHx8fDE3Njc3MTMwMDN8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1762999001316-27e31c06d3cf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxrdWxmaSUyMGljZSUyMGNyZWFtfGVufDF8fHx8MTc2NzYwMzM0MXww&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'desserts',
   },
   {
@@ -541,7 +545,7 @@ const foodItems: FoodItem[] = [
     price: 5.99,
     rating: 4.6,
     deliveryTime: '5-10 min',
-    image: 'https://images.unsplash.com/photo-1666190092159-3171cf0fbb12?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxndWxhYiUyMGphbXVuJTIwaW5kaWFuJTIwZGVzc2VydHxlbnwxfHx8fDE3Njc3MTMwMDN8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1751292271911-232b8ef4219e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxteXNvcmUlMjBwYWslMjBzd2VldHxlbnwxfHx8fDE3Njc3MTcxODh8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'desserts',
   },
   {
@@ -551,7 +555,7 @@ const foodItems: FoodItem[] = [
     price: 4.99,
     rating: 4.5,
     deliveryTime: '10-15 min',
-    image: 'https://images.unsplash.com/photo-1666190092159-3171cf0fbb12?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxndWxhYiUyMGphbXVuJTIwaW5kaWFuJTIwZGVzc2VydHxlbnwxfHx8fDE3Njc3MTMwMDN8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1708782340357-b7b38d653979?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxraGVlciUyMHBheWFzYW0lMjBwdWRkaW5nfGVufDF8fHx8MTc2NzcxNzE4OHww&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'desserts',
   },
 
@@ -563,7 +567,7 @@ const foodItems: FoodItem[] = [
     price: 2.99,
     rating: 4.9,
     deliveryTime: '5-10 min',
-    image: 'https://images.unsplash.com/photo-1668236482744-b48b28650f12?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzb3V0aCUyMGluZGlhbiUyMGZpbHRlciUyMGNvZmZlZXxlbnwxfHx8fDE3Njc3MTMwMTh8MA&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1668236482744-b48b28650f12?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmaWx0ZXIlMjBjb2ZmZWUlMjBzb3V0aHxlbnwxfHx8fDE3Njc3MTcxODh8MA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'beverages',
     badge: 'Bestseller',
   },
@@ -574,7 +578,7 @@ const foodItems: FoodItem[] = [
     price: 2.49,
     rating: 4.8,
     deliveryTime: '5-10 min',
-    image: 'https://images.unsplash.com/photo-1628702774354-f09e4a167a8e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYXNhbGElMjBjaGFpJTIwaW5kaWFuJTIwdGVhfGVufDF8fHx8MTc2NzcxMzAwNHww&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1698619952010-3bc850cbcb3b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYXNhbGElMjBjaGFpJTIwdGVhfGVufDF8fHx8MTc2NzcxNzE4OXww&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'beverages',
     badge: 'Popular',
   },
@@ -585,7 +589,7 @@ const foodItems: FoodItem[] = [
     price: 3.99,
     rating: 4.7,
     deliveryTime: '5-10 min',
-    image: 'https://images.unsplash.com/photo-1628702774354-f09e4a167a8e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYXNhbGElMjBjaGFpJTIwaW5kaWFuJTIwdGVhfGVufDF8fHx8MTc2NzcxMzAwNHww&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1709620061649-b352f63ea4cc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsYXNzaSUyMHlvZ3VydCUyMGRyaW5rfGVufDF8fHx8MTc2NzY3NTY1N3ww&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'beverages',
   },
   {
@@ -595,16 +599,18 @@ const foodItems: FoodItem[] = [
     price: 3.99,
     rating: 4.6,
     deliveryTime: '5-10 min',
-    image: 'https://images.unsplash.com/photo-1628702774354-f09e4a167a8e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYXNhbGElMjBjaGFpJTIwaW5kaWFuJTIwdGVhfGVufDF8fHx8MTc2NzcxMzAwNHww&ixlib=rb-4.1.0&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1760812990908-70aff19fc16e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiYWRhbSUyMG1pbGslMjBhbG1vbmR8ZW58MXx8fHwxNzY3NzE3MTkwfDA&ixlib=rb-4.1.0&q=80&w=1080',
     category: 'beverages',
   },
 ];
 
-export default function App() {
+function Dashboard() {
+  const { user, updateProfile, logout } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [showHero, setShowHero] = useState(true);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const filteredItems =
     selectedCategory === 'all'
@@ -671,14 +677,27 @@ export default function App() {
 
           <LocationSelector />
 
-          <Cart
-            items={cartItems}
-            isOpen={isCartOpen}
-            onOpenChange={setIsCartOpen}
-            onUpdateQuantity={handleUpdateQuantity}
-            onRemoveItem={handleRemoveItem}
-            onCheckout={handleCheckout}
-          />
+          <div className="flex items-center gap-4">
+            {/* Profile Button */}
+            <button
+              onClick={() => setIsProfileOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            >
+              <UserCircle className="w-5 h-5 text-gray-700" />
+              <span className="text-sm font-medium text-gray-700 hidden sm:inline">
+                {user?.name?.split(' ')[0] || 'Profile'}
+              </span>
+            </button>
+
+            <Cart
+              items={cartItems}
+              isOpen={isCartOpen}
+              onOpenChange={setIsCartOpen}
+              onUpdateQuantity={handleUpdateQuantity}
+              onRemoveItem={handleRemoveItem}
+              onCheckout={handleCheckout}
+            />
+          </div>
         </div>
       </header>
 
@@ -733,7 +752,7 @@ export default function App() {
 
       {/* Category Filters */}
       <section className="bg-white border-b sticky top-16 z-20">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex gap-3 overflow-x-auto">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex flex-wrap gap-3">
           {categories.map((category) => (
             <button
               key={category.id}
@@ -768,7 +787,64 @@ export default function App() {
       </section>
 
       {/* Voice Assistant */}
-      <VoiceAssistant />
+      <VoiceAssistant onAddToCart={handleAddToCart} />
+
+      {/* Profile Modal */}
+      {isProfileOpen && user && (
+        <Profile
+          user={user}
+          onClose={() => setIsProfileOpen(false)}
+          onUpdateProfile={updateProfile}
+          onLogout={logout}
+        />
+      )}
     </div>
   );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AuthApp />
+    </AuthProvider>
+  );
+}
+
+function AuthApp() {
+  const { isAuthenticated, login, signup } = useAuth();
+  const [authView, setAuthView] = useState<'login' | 'signup'>('login');
+
+  const handleLogin = (email: string, password: string) => {
+    const success = login(email, password);
+    if (success) {
+      toast.success('Welcome back to EchoEats!');
+    } else {
+      toast.error('Invalid email or password');
+    }
+  };
+
+  const handleSignup = (userData: any) => {
+    signup(userData);
+    toast.success('Account created successfully!');
+  };
+
+  if (!isAuthenticated) {
+    if (authView === 'login') {
+      return (
+        <Login 
+          onLogin={handleLogin} 
+          onSwitchToSignup={() => setAuthView('signup')} 
+        />
+      );
+    } else {
+      return (
+        <Signup 
+          onSignup={handleSignup} 
+          onSwitchToLogin={() => setAuthView('login')} 
+        />
+      );
+    }
+  }
+
+  return <Dashboard />;
 }
